@@ -28,7 +28,7 @@ npm run preview
 
 ## 환경 및 요구사항
 
-- Node.js 18 이상 권장
+- Node.js 18.20.8 이상 권장
 - 패키지 매니저: npm
 
 ## API 연동

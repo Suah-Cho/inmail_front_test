@@ -47,7 +47,6 @@ export default function EmailViewer({ email, signature }: EmailViewerProps) {
       }
 
       // POST 요청 전송 (mail_context를 텍스트로 전송)
-      console.log('mail_context post:', mailContextText);
       const response = await fetch('http://127.0.0.1:8000/api/v1/conversation', {
         method: 'POST',
         headers: {
@@ -232,7 +231,7 @@ export default function EmailViewer({ email, signature }: EmailViewerProps) {
         )}
 
         {/* Signature */}
-        {signature && (
+        {/* {signature && (
           <div className="mb-6 pt-6 border-t border-gray-300">
             <div className="mb-4">
               <div className="text-3xl font-bold text-gray-300 mb-4 tracking-wider">
@@ -256,7 +255,7 @@ export default function EmailViewer({ email, signature }: EmailViewerProps) {
               KIS정보통신
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Disclaimer */}
         <div className="mt-6 pt-6 border-t border-gray-200 text-xs text-gray-500">
