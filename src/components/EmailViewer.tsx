@@ -12,6 +12,16 @@ interface ConversationResponse {
 
 export default function EmailViewer({ email, signature }: EmailViewerProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [subject, setSubject] = useState(email.subject);
+  const [senderName, setSenderName] = useState(email.sender.name);
+  const [senderEmail, setSenderEmail] = useState(email.sender.email);
+  const [recipientName, setRecipientName] = useState(email.recipient.name);
+  const [recipientEmail, setRecipientEmail] = useState(email.recipient.email);
+  const [ccText, setCcText] = useState(
+    email.cc?.map((cc) => `${cc.name} <${cc.email}>`).join('; ') ?? ''
+  );
+  const [body, setBody] = useState(email.body);
 
   const handleAiClick = async () => {
     setIsLoading(true);
@@ -19,15 +29,15 @@ export default function EmailViewer({ email, signature }: EmailViewerProps) {
       // 메일 전체 내용을 텍스트 형식으로 구성
       let mailContextText = `메일 ID: ${email.id}\n`;
       mailContextText += `날짜: ${email.date}\n`;
-      mailContextText += `제목: ${email.subject}\n`;
-      mailContextText += `보낸사람: ${email.sender.name} <${email.sender.email}>\n`;
-      mailContextText += `받는사람: ${email.recipient.name} <${email.recipient.email}>\n`;
-      
-      if (email.cc && email.cc.length > 0) {
-        mailContextText += `참조: ${email.cc.map(cc => `${cc.name} <${cc.email}>`).join('; ')}\n`;
+      mailContextText += `제목: ${subject}\n`;
+      mailContextText += `보낸사람: ${senderName} <${senderEmail}>\n`;
+      mailContextText += `받는사람: ${recipientName} <${recipientEmail}>\n`;
+
+      if (ccText.trim()) {
+        mailContextText += `참조: ${ccText}\n`;
       }
-      
-      mailContextText += `\n본문:\n${email.body}\n`;
+
+      mailContextText += `\n본문:\n${body}\n`;
       
       if (email.tableData && email.tableData.length > 0) {
         mailContextText += `\n표 데이터:\n`;
@@ -139,6 +149,12 @@ export default function EmailViewer({ email, signature }: EmailViewerProps) {
           >
             {isLoading ? '처리 중...' : 'AI 사용하기'}
           </button>
+          <button
+            onClick={() => setIsEditing((prev) => !prev)}
+            className="px-3 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-50"
+          >
+            {isEditing ? '편집 완료' : '편집'}
+          </button>
         </div>
 
         {/* Email Header */}
@@ -149,28 +165,85 @@ export default function EmailViewer({ email, signature }: EmailViewerProps) {
           </button>
           <div className="mb-4">
             <div className="text-lg font-semibold text-gray-800 mb-4">
-              {email.subject}
+              {isEditing ? (
+                <input
+                  value={subject}
+                  onChange={(event) => setSubject(event.target.value)}
+                  className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
+                />
+              ) : (
+                subject
+              )}
             </div>
             <div className="space-y-2 text-sm">
               <div>
                 <span className="text-gray-600">보낸사람: </span>
                 <span className="text-gray-800">
-                  {email.sender.name} &lt;{email.sender.email}&gt;
+                  {isEditing ? (
+                    <span className="flex flex-wrap gap-2">
+                      <input
+                        value={senderName}
+                        onChange={(event) => setSenderName(event.target.value)}
+                        className="border border-gray-300 rounded px-2 py-1 text-xs"
+                        placeholder="이름"
+                      />
+                      <input
+                        value={senderEmail}
+                        onChange={(event) => setSenderEmail(event.target.value)}
+                        className="border border-gray-300 rounded px-2 py-1 text-xs"
+                        placeholder="email@example.com"
+                      />
+                    </span>
+                  ) : (
+                    <>
+                      {senderName} &lt;{senderEmail}&gt;
+                    </>
+                  )}
                 </span>
               </div>
               <div>
                 <span className="text-gray-600">받는사람: </span>
                 <span className="text-gray-800">
-                  {email.recipient.name} &lt;{email.recipient.email}&gt;
+                  {isEditing ? (
+                    <span className="flex flex-wrap gap-2">
+                      <input
+                        value={recipientName}
+                        onChange={(event) =>
+                          setRecipientName(event.target.value)
+                        }
+                        className="border border-gray-300 rounded px-2 py-1 text-xs"
+                        placeholder="이름"
+                      />
+                      <input
+                        value={recipientEmail}
+                        onChange={(event) =>
+                          setRecipientEmail(event.target.value)
+                        }
+                        className="border border-gray-300 rounded px-2 py-1 text-xs"
+                        placeholder="email@example.com"
+                      />
+                    </span>
+                  ) : (
+                    <>
+                      {recipientName} &lt;{recipientEmail}&gt;
+                    </>
+                  )}
                 </span>
               </div>
-              {email.cc && email.cc.length > 0 && (
+              {ccText.trim() && (
                 <div>
                   <span className="text-gray-600">참조: </span>
                   <span className="text-gray-800">
-                    {email.cc
-                      .map((cc) => `${cc.name} <${cc.email}>`)
-                      .join('; ')}
+                    {isEditing ? (
+                      <input
+                        value={ccText}
+                        onChange={(event) => setCcText(event.target.value)}
+                        className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
+                        placeholder="이름 <email@example.com>; 이름2 <email2@example.com>"
+                      />
+                    ) : (
+                      ccText
+                    )}
                   </span>
                 </div>
               )}
@@ -191,7 +264,15 @@ export default function EmailViewer({ email, signature }: EmailViewerProps) {
 
         {/* Email Body */}
         <div className="mb-6 whitespace-pre-line text-gray-800">
-          {email.body}
+          {isEditing ? (
+            <textarea
+              value={body}
+              onChange={(event) => setBody(event.target.value)}
+              className="w-full min-h-[240px] border border-gray-300 rounded px-2 py-2 text-sm"
+            />
+          ) : (
+            body
+          )}
         </div>
 
         {/* Table */}
