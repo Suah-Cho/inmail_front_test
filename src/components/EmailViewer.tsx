@@ -69,10 +69,10 @@ export default function EmailViewer({ email, signature }: EmailViewerProps) {
         localStorage.setItem('conversation_id', data.conversation_id);
         
         // 새 창 열기 (URL 파라미터로 conversation_id 전달)
-        window.open(`http://localhost:5173?conversation_id=${encodeURIComponent(data.conversation_id)}`, '_blank', 'width=1200,height=800,resizable=yes,scrollbars=yes');
+        window.open(`http://localhost:10041?conversation_id=${encodeURIComponent(data.conversation_id)}`, '_blank', 'width=1200,height=800,resizable=yes,scrollbars=yes');
       } else {
         // conversation_id가 없을 경우에도 새 창 열기
-        window.open('http://localhost:5173', '_blank', 'width=1200,height=800,resizable=yes,scrollbars=yes');
+        window.open('http://localhost:10041', '_blank', 'width=1200,height=800,resizable=yes,scrollbars=yes');
       }
     } catch (error) {
       console.error('AI 사용하기 오류:', error);

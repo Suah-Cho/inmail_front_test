@@ -46,7 +46,7 @@ npm run preview
 }
 ```
 
-`conversation_id`가 존재하면 `http://localhost:5173?conversation_id=...`로 새 창을 엽니다.
+`conversation_id`가 존재하면 `http://localhost:10041?conversation_id=...`로 새 창을 엽니다.
 
 ## 프로젝트 구조
 
